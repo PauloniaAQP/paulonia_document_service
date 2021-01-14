@@ -5,9 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:paulonia_utils/paulonia_utils.dart';
 import 'package:paulonia_error_service/paulonia_error_service.dart';
 
-
-class PauloniaDocumentService{
-
+class PauloniaDocumentService {
   /// Get a document snapshot from a document reference
   ///
   /// This function verifies if there is network. If there is, it gets the document
@@ -16,24 +14,20 @@ class PauloniaDocumentService{
   /// Set [cache] to true to force get the document from cache
   /// Set [forceServer] to true to force get the document from server. If there is not
   /// network, it returns null.
-  static Future<DocumentSnapshot> getDoc(
-    DocumentReference docRef,
-    bool cache, {
-    bool forceServer = false
-  }) async{
-    try{
-      if(PUtils.isOnTest()) return docRef.get();
+  static Future<DocumentSnapshot> getDoc(DocumentReference docRef, bool cache,
+      {bool forceServer = false}) async {
+    try {
+      if (PUtils.isOnTest()) return docRef.get();
       Source source = Source.serverAndCache;
       bool networkFlag = await PUtils.checkNetwork();
-      if(cache || !networkFlag){
-        if(forceServer && !cache) return null;
+      if (cache || !networkFlag) {
+        if (forceServer && !cache) return null;
         source = Source.cache;
       }
       return await docRef.get(GetOptions(source: source));
-    }
-    catch(error){
+    } catch (error) {
       print(error);
-      if(error.runtimeType == PlatformException) return getDoc(docRef, false);
+      if (error.runtimeType == PlatformException) return getDoc(docRef, false);
       PauloniaErrorService.sendError(error);
       return null;
     }
@@ -47,11 +41,8 @@ class PauloniaDocumentService{
   /// Set [cache] to true to force get the documents from cache
   /// Set [forceServer] to true to force get the documents from server. If there is not
   /// network, it returns null.
-  static Future<QuerySnapshot> getAll(
-    CollectionReference collRef,
-    bool cache, {
-    bool forceServer = false
-  }) async{
+  static Future<QuerySnapshot> getAll(CollectionReference collRef, bool cache,
+      {bool forceServer = false}) async {
     try {
       if (PUtils.isOnTest()) return collRef.get();
       Source source = Source.serverAndCache;
@@ -61,9 +52,8 @@ class PauloniaDocumentService{
         source = Source.cache;
       }
       return await collRef.get(GetOptions(source: source));
-    }
-    catch(error){
-      if(error.runtimeType == PlatformException) return getAll(collRef, false);
+    } catch (error) {
+      if (error.runtimeType == PlatformException) return getAll(collRef, false);
       PauloniaErrorService.sendError(error);
       return null;
     }
@@ -77,7 +67,8 @@ class PauloniaDocumentService{
   /// Set [cache] to true to force get the documents from cache
   /// Set [forceServer] to true to force get the documents from server. If there is not
   /// network, it returns null.
-  static Future<QuerySnapshot> runQuery(Query query, bool cache, {bool forceServer = false}) async{
+  static Future<QuerySnapshot> runQuery(Query query, bool cache,
+      {bool forceServer = false}) async {
     try {
       if (PUtils.isOnTest()) return query.get();
       Source source = Source.serverAndCache;
@@ -87,17 +78,15 @@ class PauloniaDocumentService{
         source = Source.cache;
       }
       return await query.get(GetOptions(source: source));
-    }
-    catch(error){
-      if(error.runtimeType == PlatformException) return runQuery(query, false);
+    } catch (error) {
+      if (error.runtimeType == PlatformException) return runQuery(query, false);
       PauloniaErrorService.sendError(error);
       return null;
     }
   }
 
   /// Get a query snapshot stream from a query
-  static Stream<QuerySnapshot> getStreamByQuery(Query query){
+  static Stream<QuerySnapshot> getStreamByQuery(Query query) {
     return query.snapshots();
   }
-
 }
