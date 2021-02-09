@@ -12,8 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   cloud_firestore: ^0.16.0
-  paulonia_utils: ^0.1.0
-  paulonia_error_service: ^0.0.1
+  paulonia_utils: 0.0.1
 
 dev_dependencies:
   flutter_test:

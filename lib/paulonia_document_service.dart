@@ -26,10 +26,8 @@ class PauloniaDocumentService {
       }
       return await docRef.get(GetOptions(source: source));
     } catch (error) {
-      print(error);
       if (error.runtimeType == PlatformException) return getDoc(docRef, false);
-      PauloniaErrorService.sendError(error);
-      return null;
+      throw error;
     }
   }
 
@@ -54,8 +52,7 @@ class PauloniaDocumentService {
       return await collRef.get(GetOptions(source: source));
     } catch (error) {
       if (error.runtimeType == PlatformException) return getAll(collRef, false);
-      PauloniaErrorService.sendError(error);
-      return null;
+      throw error;
     }
   }
 
@@ -80,8 +77,7 @@ class PauloniaDocumentService {
       return await query.get(GetOptions(source: source));
     } catch (error) {
       if (error.runtimeType == PlatformException) return runQuery(query, false);
-      PauloniaErrorService.sendError(error);
-      return null;
+      throw error;
     }
   }
 
