@@ -1,6 +1,6 @@
 name: paulonia_document_service
 description: Flutter package that wraps the escential functions to read documents from Firestore. This package contains functions to get individual documents and runs queries.
-version: 0.2.0
+version: 0.3.0
 homepage: https://paulonia.dev
 repository: https://github.com/PauloniaAQP/paulonia_document_service
 
