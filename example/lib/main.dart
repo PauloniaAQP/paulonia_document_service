@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:paulonia_document_service/paulonia_document_service.dart';
+import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -48,18 +56,22 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  final db = FirebaseFirestore.instance;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  Future<DocumentSnapshot?> getDoc() {
+    final docRef = db.collection("test").doc("test_1");
+    return PauloniaDocumentService.getDoc(docRef, false);
   }
+
+  Future<QuerySnapshot?> getAll() {
+    return PauloniaDocumentService.getAll(db.collection("test"), false);
+  }
+
+  Future<QuerySnapshot?> runQuery() {
+    final query = db.collection("test").where("value", isEqualTo: "test_2");
+    return PauloniaDocumentService.runQuery(query, false);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -95,21 +107,52 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            FutureBuilder<DocumentSnapshot?>(future: getDoc(), builder: (context, snap) {
+              if (snap.hasData) {
+                if (snap.data == null) {
+                  return const Text("null!!");
+                }
+                return Text(snap.data!.get("value"));
+              }
+              else if  (snap.hasError) {
+                print(snap.error);
+                return Text("Error");
+              }
+              return const Text("Loading");
+            }),
+            FutureBuilder<QuerySnapshot?>(future: getAll(), builder: (context, snap) {
+              if (snap.hasData) {
+                if (snap.data == null) {
+                  return const Text("null!!");
+                }
+                List<Widget> children = [];
+                for (DocumentSnapshot doc in snap.data!.docs) {
+                  children.add(Text(doc.get("value")));
+                }
+                return Column(
+                  children: children,
+                );
+              }
+              return const Text("Loading");
+            }),
+            FutureBuilder<QuerySnapshot?>(future: runQuery(), builder: (context, snap) {
+              if (snap.hasData) {
+                if (snap.data == null) {
+                  return const Text("null!!");
+                }
+                List<Widget> children = [];
+                for (DocumentSnapshot doc in snap.data!.docs) {
+                  children.add(Text(doc.get("value")));
+                }
+                return Column(
+                  children: children,
+                );
+              }
+              return const Text("Loading");
+            }),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
